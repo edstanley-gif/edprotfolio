@@ -532,6 +532,44 @@
         </div>
     </section>
 
+    <!-- AI Exploration Section -->
+    <section id="ai" class="py-24 bg-cardbg/20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                <div data-aos="fade-right">
+                    <h2 class="text-4xl font-black mb-4">AI Exploration</h2>
+                    <p class="text-slate-400 italic">探索人工智慧在建築與影像中的無限可能</p>
+                </div>
+                <div class="text-primary text-sm mt-4 md:mt-0 uppercase tracking-widest animate-pulse">
+                    The Future is Now
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- AI Video Project -->
+                <div class="group cursor-pointer relative overflow-hidden rounded-2xl bg-cardbg border border-white/5"
+                    data-aos="fade-up"
+                    onclick="openModal('大樓穿羽絨服', 'AI 影片實驗', '利用 Kling AI 生成的大樓穿著羽絨服的趣味創意影片。探討建築外牆與軟材質的超現實結合。', ['video/aivideo1.mp4'], ['Kling AI', 'Stable Video Diffusion'])">
+                    <div class="aspect-[16/9] overflow-hidden relative">
+                        <div
+                            class="w-full h-full bg-gradient-to-br from-primary/20 to-black flex items-center justify-center">
+                            <i
+                                class="fas fa-play-circle text-6xl text-white/30 group-hover:text-primary transition-colors"></i>
+                        </div>
+                        <div
+                            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="text-white font-bold tracking-widest text-xs">WATCH VIDEO</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs text-accent font-bold uppercase tracking-widest">Kling AI Video</span>
+                        <h3 class="text-xl font-bold mt-2">大樓穿羽絨服</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer / Contact -->
     <footer id="contact" class="py-20 border-t border-white/5">
         <div class="container mx-auto px-6 text-center">
@@ -567,9 +605,15 @@
                 <i class="fas fa-times"></i>
             </button>
             <div class="flex flex-col">
-                <div class="relative w-full aspect-video overflow-hidden group/modal">
+                <div class="relative w-full bg-black flex items-center justify-center overflow-hidden group/modal"
+                    style="height: 75vh;">
                     <img id="modalImage" src="" alt="Project"
-                        class="w-full h-full object-cover transition-opacity duration-300">
+                        class="max-w-full max-h-full w-auto h-auto object-contain transition-opacity duration-300">
+                    <video id="modalVideo" controls class="max-w-full max-h-full w-auto h-auto object-contain hidden"
+                        playsinline>
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
 
                     <!-- Navigation Arrows -->
                     <button onclick="prevImage()" id="prevBtn"
@@ -618,6 +662,7 @@
         const modalCategory = document.getElementById('modalCategory');
         const modalDesc = document.getElementById('modalDesc');
         const modalImage = document.getElementById('modalImage');
+        const modalVideo = document.getElementById('modalVideo');
         let currentImages = [];
         let currentImageIndex = 0;
 
@@ -656,12 +701,26 @@
         }
 
         function updateModalImage() {
-            modalImage.style.opacity = '0.3';
-            setTimeout(() => {
-                modalImage.src = currentImages[currentImageIndex];
-                modalImage.style.opacity = '1';
+            const currentSrc = currentImages[currentImageIndex];
+            const isVideo = currentSrc.toLowerCase().endsWith('.mp4');
+
+            if (isVideo) {
+                modalImage.classList.add('hidden');
+                modalVideo.classList.remove('hidden');
+                modalVideo.src = currentSrc;
+                modalVideo.play();
                 document.getElementById('imageCounter').innerText = `${currentImageIndex + 1} / ${currentImages.length}`;
-            }, 150);
+            } else {
+                modalVideo.classList.add('hidden');
+                modalVideo.pause();
+                modalImage.classList.remove('hidden');
+                modalImage.style.opacity = '0.3';
+                setTimeout(() => {
+                    modalImage.src = currentSrc;
+                    modalImage.style.opacity = '1';
+                    document.getElementById('imageCounter').innerText = `${currentImageIndex + 1} / ${currentImages.length}`;
+                }, 150);
+            }
         }
 
         function nextImage() {
@@ -678,6 +737,8 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
+            modalVideo.pause();
+            modalVideo.src = '';
         }
 
         // Handle Keyboard Events
